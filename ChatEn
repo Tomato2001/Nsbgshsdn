@@ -1,0 +1,94 @@
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local ChatRemote = game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("SayMessageRequest")
+
+local Messages = {
+   
+     "Wow, @%s, it's vital for you to know that you're a complete @loser.",
+
+"@%s, your @stuрidity knows no bounds, even street cats are ashamed of you.",
+
+"Kid, @%s, it's no wonder that you can't achieve anything in life if you can't even @tie your shoes @properly.",
+
+"@%s, just keep going through life making one @stuрid move after another, as if you @hаve а @соlаnder @оn your head.",
+
+"Do you even know, @%s, what awareness is? I sense that you won't even find that word in the @dictionary.",
+
+"I don't understand how you, @%s, manage to always end up at the bottom of the social ladder. Are you the record holder for failures or something?",
+
+"@%s, you can confidently claim the @Title of the most hopeless case in the history of humanity.",
+
+"I have never seen a person who can skillfully manage to repeatedly faceplant into their own @stuрidity quite like you, @%s.",
+
+"You, @%s, are like a living example of how even a flower pot can be @smarter than you.",
+
+"It's really cute how @%s continues to engage in the same @foolish @behavior. I hope it's his only talent.",
+
+"Considering how you can't even add two and two together, @%s, I think it would be easier to split plutonium than to explain anything to you.",
+
+"You, @%s, seem to have invented a new level of @idiocy and now proudly represent it all by @yоurself.",
+
+"@%s, tell me, how many times do you need to step on a rake to understand that even your own family doesn't want to see you?",
+
+"I'm always amazed at how you, @%s, manage to keep all ten fingers on your hands and not do anything intelligent.",
+
+"I look forward to the moment, @%s, when you realize that every day for you is a complete waste of time and opportunities.",
+
+"@%s, the most astonishing thing is that you still don't admire yourself, despite your @degenerative skills.",
+
+"I'm simply limiting myself, @%s, so that you don't feel completely alone in your ignorant state.",
+
+"Who would have thought that in our age you, @%s, could be considered a direct descendant of Karl Marx—your ideas are just as useless and @оutdаted.",
+
+"@%s, you are a perfect example of how @stuрidity has no limits.",
+
+"I have a proposal for you, @%s: stop being such a failure and try doing something useful in your life. Although, wait, I'm not even sure you have the intelligence for that.",
+
+"I look at you, @%s, and can't help but wonder how your @parents managed to raise such a useless specimen.",
+
+"I can't help but admire how @%s consistently reaches new levels of @idiocy. Maybe you'll earn some recognition for that, at least?",
+
+"Your inability to learn from your @mistakes, @%s, translates only to your ability to make empty promises. How do you manage to not get lost in your @blunders?",
+
+"You, @%s, prove that @infinity isn't the longest time when you're trying to accomplish the simplest task.",
+
+"It's really interesting, @%s, who taught you such incompetence and hopelessness? Were your @parents responsible, or did you achieve such a high level of stupidity on your own?",
+
+"Every time you say something, @%s, I imagine a whole factory of idiocy working at maximum production capacity to produce your dumb statements.",
+
+"You're such an ignorant person, @%s, that you can't even deceive your own shadow. Maybe it's time to stop and think about why you've contaminated the internet with @уоur @раthetic presence?",
+
+"I see, @%s, that you're an expert in getting into foolish situations. I hope you'll take pride in that throughout your life.",
+
+"Your actions, @%s, are impressively devoid of any ideas. Someday, you'll be able to proudly tell your grandchildren how you wasted your life on pointless endeavors.",
+
+"Kid, @%s, give me one reason why I should waste my brain cells to explain to you how untalented you appear to everyone around you."
+}
+
+local scriptEnabled = true
+
+local function getRandomPlayer()
+    local currentPlayerName = Players.LocalPlayer.Name
+    local randomPlayer = nil
+    repeat
+        local randomIndex = math.random(1, #Players:GetPlayers())
+        randomPlayer = Players:GetPlayers()[randomIndex]
+    until randomPlayer.Name ~= currentPlayerName
+    return randomPlayer.Name
+end
+
+local function onKeyPress(input)
+    if input.KeyCode == Enum.KeyCode.E then
+        scriptEnabled = not scriptEnabled
+    end
+end
+
+UserInputService.InputBegan:Connect(onKeyPress)
+
+while wait(3.2) do
+    if scriptEnabled then
+        local randomMessage = Messages[math.random(1, #Messages)]
+        local message = string.format(randomMessage, getRandomPlayer())
+        ChatRemote:FireServer(message, "All")
+    end
+end
