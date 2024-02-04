@@ -1,0 +1,27 @@
+local player = game.Players.LocalPlayer -- Получаем объект текущего игрока
+local backpack = player:WaitForChild("Backpack") -- Получаем доступ к инвентарю игрока
+local delayTime = 0.1 -- Задержка в секундах между сменами предметов
+
+-- Функция для циклического переключения между всеми предметами
+local function cycleItems()
+    local items = {} -- Список для хранения всех предметов в инвентаре
+
+    -- Собираем все предметы в инвентаре в список
+    for _, item in pairs(backpack:GetChildren()) do
+        if item:IsA("Tool") then
+            table.insert(items, item)
+        end
+    end
+
+    -- Перебираем собранные предметы, берем каждый по очереди в руки
+    while #items > 0 do
+        for _, item in ipairs(items) do
+            item.Parent = player.Character -- Перемещаем предмет в руки игрока
+            wait(delayTime) -- Ждем заданное время перед тем, как взять следующий предмет
+            item.Parent = backpack -- Возвращаем предмет обратно в инвентарь
+        end
+    end
+end
+
+-- Запускаем функцию в отдельном потоке, чтобы избежать блокировки основного потока скрипта
+spawn(function() cycleItems() end)
