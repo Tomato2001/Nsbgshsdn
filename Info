@@ -1,0 +1,17 @@
+local player = game.Players.LocalPlayer -- Получаем объект текущего игрока
+local function getCurrentItemInHand()
+    -- Проверяем, существует ли персонаж у игрока в данный момент
+    if player.Character then
+        -- Перебираем все объекты в руках персонажа
+        for _, item in pairs(player.Character:GetChildren()) do
+            -- Проверяем, является ли объект инструментом (Tool)
+            if item:IsA("Tool") then
+                return item.Name -- Возвращаем название предмета
+            end
+        end
+    end
+    return "Нет предмета в руках" -- Возвращаем это сообщение, если в руках нет инструментов
+end
+
+-- Пример использования функции для вывода названия предмета в руках
+print(getCurrentItemInHand())
