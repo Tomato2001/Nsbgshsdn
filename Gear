@@ -1,6 +1,6 @@
 local player = game.Players.LocalPlayer -- Получаем объект текущего игрока
 local backpack = player:WaitForChild("Backpack") -- Получаем доступ к инвентарю игрока
-local delayTime = 0.1 -- Задержка в секундах между сменами предметов
+local delayTime = 0.001 -- Задержка в секундах между сменами предметов
 
 -- Функция для циклического переключения между всеми предметами
 local function cycleItems()
