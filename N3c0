@@ -1,0 +1,139 @@
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local YesButton = Instance.new("TextButton")
+local NoButton = Instance.new("TextButton")
+local PromptText = Instance.new("TextLabel")
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.new(0, 0, 0) -- Черный фон
+Frame.Size = UDim2.new(0.3, 0, 0.2, 0)
+Frame.Position = UDim2.new(0.35, 0, 0.4, 0)
+
+YesButton.Parent = Frame
+YesButton.Text = "Yes"
+YesButton.Size = UDim2.new(0.4, 0, 0.3, 0)
+YesButton.Position = UDim2.new(0.05, 0, 0.6, 0)
+
+NoButton.Parent = Frame
+NoButton.Text = "No"
+NoButton.Size = UDim2.new(0.4, 0, 0.3, 0)
+NoButton.Position = UDim2.new(0.55, 0, 0.6, 0)
+
+PromptText.Parent = Frame
+PromptText.Text = "Are you sure you want to activate this? There will be dire consequences."
+PromptText.Size = UDim2.new(0.9, 0, 0.5, 0)
+PromptText.Position = UDim2.new(0.05, 0, 0.05, 0)
+PromptText.TextWrapped = true
+
+NoButton.MouseButton1Click:Connect(function()
+    Frame:Destroy() -- Убираем меню
+end)
+
+YesButton.MouseButton1Click:Connect(function()
+    Frame:Destroy() -- Убираем меню
+    -- Проигрываем звук
+    local Sound = Instance.new("Sound")
+    Sound.SoundId = "rbxassetid://1841092993"
+    Sound.Volume = 3
+    Sound.Looped = false -- Убедитесь, что звук не зациклен
+    Sound.Parent = game.Players.LocalPlayer.Character.Head
+    Sound:Play()
+    local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Debris = game:GetService("Debris")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local npcSpeed = 28 -- Скорость NPC
+local spawnDelay = 4 -- Задержка между спавном NPC в секундах
+local npcSoundId = "rbxassetid://7483535960" -- ID звука для NPC
+local soundVolume = 1 -- Громкость звука
+local soundRadius = 70 -- Радиус, в котором будет слышен звук
+local npcSize = Vector3.new(9, 9, 9) -- Размер NPC
+
+local npcList = {} -- Список для отслеживания NPC
+
+local function createNPC()
+    local npc = Instance.new("Model", workspace)
+    npc.Name = "NextBot"
+
+    local head = Instance.new("Part", npc)
+    head.Name = "Head"
+    head.Size = npcSize
+      local spawnPosition
+    repeat
+        spawnPosition = humanoidRootPart.Position + Vector3.new(math.random(-500, 500), 0, math.random(-500, 500))
+    until (spawnPosition - humanoidRootPart.Position).magnitude >= 500
+    head.Position = spawnPosition
+    head.Anchored = false
+
+    -- Добавляем обработчик события Touched к голове NPC
+    head.Touched:Connect(function(hit)
+        local humanoid = hit.Parent:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.Health = 0 -- Мгновенно убиваем игрока при контакте
+        end
+    end)
+
+    -- Добавляем текстуру на каждую сторону куба
+    for _, face in ipairs(Enum.NormalId:GetEnumItems()) do
+        local decal = Instance.new("Decal", head)
+        decal.Texture = "rbxassetid://16489078749"
+        decal.Face = face
+    end
+
+    local sound = Instance.new("Sound", head)
+    sound.SoundId = npcSoundId
+    sound.Volume = soundVolume
+    sound.RollOffMaxDistance = soundRadius
+    sound.Looped = true
+    sound:Play()
+
+    local bodyVelocity = Instance.new("BodyVelocity", head)
+    bodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+
+    table.insert(npcList, npc) -- Добавляем NPC в список
+
+    RunService.Heartbeat:Connect(function()
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            local playerPosition = character.HumanoidRootPart.Position
+            local npcPosition = head.Position
+            local lookAtPosition = CFrame.lookAt(npcPosition, playerPosition)
+            head.CFrame = lookAtPosition
+
+            local direction = (playerPosition - npcPosition).unit
+            bodyVelocity.Velocity = direction * npcSpeed
+
+            if (npcPosition - playerPosition).magnitude < 5 then
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid.Health = 0
+                end
+            end
+        end
+    end)
+end
+
+-- Изменим функцию onDeath, чтобы NPC не удалялись после смерти игрока
+local function onDeath()
+    -- NPC больше не удаляются после смерти игрока
+end
+
+player.CharacterAdded:Connect(function(char)
+    character = char
+    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+end)
+
+player.CharacterRemoving:Connect(onDeath)
+
+while true do
+    createNPC()
+    wait(spawnDelay)
+end
+end)
