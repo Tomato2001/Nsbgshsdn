@@ -37,7 +37,7 @@ YesButton.MouseButton1Click:Connect(function()
     -- Проигрываем звук
     local Sound = Instance.new("Sound")
     Sound.SoundId = "rbxassetid://1841092993"
-    Sound.Volume = 3
+    Sound.Volume = 4
     Sound.Looped = false -- Убедитесь, что звук не зациклен
     Sound.Parent = game.Players.LocalPlayer.Character.Head
     Sound:Play()
@@ -49,14 +49,24 @@ local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
-local npcSpeed = 28 -- Скорость NPC
-local spawnDelay = 4 -- Задержка между спавном NPC в секундах
+local npcSpeed = 30 -- Скорость NPC
+local spawnDelay = 3 -- Задержка между спавном NPC в секундах
 local npcSoundId = "rbxassetid://7483535960" -- ID звука для NPC
 local soundVolume = 1 -- Громкость звука
-local soundRadius = 70 -- Радиус, в котором будет слышен звук
+local soundRadius = 90 -- Радиус, в котором будет слышен звук
 local npcSize = Vector3.new(9, 9, 9) -- Размер NPC
 
 local npcList = {} -- Список для отслеживания NPC
+
+-- Функция для проверки возможности NPC пройти
+local function canPassThrough(npcHead)
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {npcHead, character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    local direction = (character.HumanoidRootPart.Position - npcHead.Position).unit * 10 -- Направление и дистанция проверки
+    local raycastResult = workspace:Raycast(npcHead.Position, direction, raycastParams)
+    return not raycastResult
+end
 
 local function createNPC()
     local npc = Instance.new("Model", workspace)
@@ -71,7 +81,7 @@ local function createNPC()
     until (spawnPosition - humanoidRootPart.Position).magnitude >= 500
     head.Position = spawnPosition
     head.Anchored = false
-
+    
     -- Добавляем обработчик события Touched к голове NPC
     head.Touched:Connect(function(hit)
         local humanoid = hit.Parent:FindFirstChildOfClass("Humanoid")
@@ -100,7 +110,8 @@ local function createNPC()
 
     table.insert(npcList, npc) -- Добавляем NPC в список
 
-    RunService.Heartbeat:Connect(function()
+    local stuckTime = 0 -- Время застревания
+    RunService.Heartbeat:Connect(function(deltaTime)
         if character and character:FindFirstChild("HumanoidRootPart") then
             local playerPosition = character.HumanoidRootPart.Position
             local npcPosition = head.Position
@@ -110,11 +121,15 @@ local function createNPC()
             local direction = (playerPosition - npcPosition).unit
             bodyVelocity.Velocity = direction * npcSpeed
 
-            if (npcPosition - playerPosition).magnitude < 5 then
-                local humanoid = character:FindFirstChildOfClass("Humanoid")
-                if humanoid then
-                    humanoid.Health = 0
+            -- Проверка застревания и ноуклип
+            if not canPassThrough(head) then
+                stuckTime = stuckTime + deltaTime
+                if stuckTime >= 5 then -- Если застрял на 5 секунд, включаем ноуклип
+                    head.CanCollide = false
                 end
+            else
+                stuckTime = 0
+                head.CanCollide = true
             end
         end
     end)
