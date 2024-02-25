@@ -1,5 +1,5 @@
 while true do
-  wait(10)
+wait(5)
 local Services = setmetatable({}, {__index = function(Self, Index)
 local NewService = game.GetService(game, Index)
 if NewService then
@@ -32,7 +32,7 @@ local function PlayerAdded(Player)
        if (Character and Character:IsDescendantOf(workspace)) and (PrimaryPart and PrimaryPart:IsDescendantOf(Character)) then
            if PrimaryPart.AssemblyAngularVelocity.Magnitude > 1 or PrimaryPart.AssemblyLinearVelocity.Magnitude > 1 then
                if Detected == false then
-             
+                   
                end
                Detected = true
                for i,v in ipairs(Character:GetDescendants()) do
@@ -52,6 +52,7 @@ local function PlayerAdded(Player)
    end)
 end
 
+-- // Event Listeners \\ --
 for i,v in ipairs(Services.Players:GetPlayers()) do
    if v ~= LocalPlayer then
        PlayerAdded(v)
@@ -63,14 +64,14 @@ local LastPosition = nil
 Services.RunService.Heartbeat:Connect(function()
    pcall(function()
        local PrimaryPart = LocalPlayer.Character.PrimaryPart
-       if PrimaryPart.AssemblyLinearVelocity.Magnitude > 200 or PrimaryPart.AssemblyAngularVelocity.Magnitude > 200 then
+       if PrimaryPart.AssemblyLinearVelocity.Magnitude > 25e90 or PrimaryPart.AssemblyAngularVelocity.Magnitude > 25e90 then
            PrimaryPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
            PrimaryPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
            PrimaryPart.CFrame = LastPosition
 
-       elseif PrimaryPart.AssemblyLinearVelocity.Magnitude < 50 or PrimaryPart.AssemblyAngularVelocity.Magnitude > 50 then
+       elseif PrimaryPart.AssemblyLinearVelocity.Magnitude < 5e99 or PrimaryPart.AssemblyAngularVelocity.Magnitude > 5e99 then
            LastPosition = PrimaryPart.CFrame
        end
    end)
 end)
-  end
+end
