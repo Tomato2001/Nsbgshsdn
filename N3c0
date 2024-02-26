@@ -49,10 +49,10 @@ local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
-local npcSpeed = 30 -- Скорость NPC
-local spawnDelay = 3 -- Задержка между спавном NPC в секундах
+local npcSpeed = 33 -- Скорость NPC
+local spawnDelay = 6 -- Задержка между спавном NPC в секундах
 local npcSoundId = "rbxassetid://7483535960" -- ID звука для NPC
-local soundVolume = 1 -- Громкость звука
+local soundVolume = 2 -- Громкость звука
 local soundRadius = 90 -- Радиус, в котором будет слышен звук
 local npcSize = Vector3.new(9, 9, 9) -- Размер NPC
 
